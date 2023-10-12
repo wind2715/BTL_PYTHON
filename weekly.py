@@ -87,49 +87,47 @@ def update_gui():
                         relief='solid', bd=0)
     month_label.grid(row=0, columnspan=8, pady=5)
 
+    event_width = 170  # Set the desired width for each event
+
     for i in range(7):
         day_number = (start_of_week + datetime.timedelta(days=i)).day
         day_label = Label(days_frame,
                           text=f'{(start_of_week + datetime.timedelta(days=i)).strftime("%a")}\n{day_number}',
                           font=('Open Sans', 12), bg='white', relief='solid', borderwidth=1,
-                          width=16, height=2)  # Set width and height as needed
+                          width=16, height=2)
 
         day_label.bind("<Button-1>", lambda event, day=day_number: add_event(day))
         day_label.grid(row=1, column=i, padx=5, pady=0, ipadx=10, ipady=2)
         days_frame.columnconfigure(i, weight=1)
 
         if day_number in events_dict:
-            canvas = Canvas(days_frame, bg='white', width=66, height=400, bd=0, highlightthickness=0)
-            canvas.grid(row=2, column=i, padx=20, pady=0, ipadx=20, ipady=2, sticky='nsew')
+            canvas_width = event_width + 20  # Add some padding if needed
+            canvas = Canvas(days_frame, bg='white', width=canvas_width, height=400, bd=0, highlightthickness=0)
+            canvas.grid(row=2, column=i, padx=0, pady=0, ipadx=0, ipady=2, sticky='nsew')
 
             for j, event_info in enumerate(events_dict[day_number]):
-                event_frame = Frame(canvas, bg='white', relief='solid', bd=1)
+                event_frame_width = event_width
+                event_frame = Frame(canvas, bg='white', relief='solid', bd=1, width=event_frame_width, height=day_label.winfo_height())
                 event_frame.pack(pady=5)
 
-                event_label = Label(event_frame, text=f"{event_info['name']}\n{event_info['time']}",
-                                    font=('Open Sans', 10), bg='white')
+                event_label_text = f"Name: {event_info['name']}\nThời gian: {event_info['time']}"
+
+                event_label = Label(event_frame, text=event_label_text,
+                                    font=('Open Sans', 10), bg='white', anchor='w', justify='left', wraplength=event_frame_width)
                 event_label.pack(pady=5)
 
                 event_label.bind("<Button-1>", lambda event, day=day_number, index=j: show_event_details(day, index))
 
-
     days_frame.columnconfigure(7, weight=1)
-
-
-def set_geometry():
-    for i in range(7):
-        days_frame.columnconfigure(i, minsize=100)  # Set a fixed width for each column
-        days_frame.rowconfigure(i, minsize=50)  # Set a fixed height for each row
-    weekly_window.geometry('{}x{}+0+0'.format(screen_width, screen_height - 40))
-    weekly_window.update()
 
 
 weekly_window = Tk()
 
-screen_width = weekly_window.winfo_screenwidth()
-screen_height = weekly_window.winfo_screenheight()
-
-weekly_window.geometry('{}x{}+0+0'.format(screen_width, screen_height - 40))
+screen_width = 1250
+screen_height = 800
+weekly_window_width = weekly_window.winfo_screenwidth()
+screen_height_height2 = weekly_window.winfo_screenheight() - 40
+weekly_window.geometry('{}x{}+0+0'.format(weekly_window_width, screen_height_height2))
 
 weekly_window.resizable(0, 0)
 weekly_window.title('Weekly Page')
@@ -178,8 +176,6 @@ notion_button.grid(row=1, column=0, padx=5, pady=5, sticky='w')
 
 days_frame = Frame(weekly_window, bg='white')
 days_frame.place(x=280, y=10)
-
-set_geometry()  # Call set_geometry function to set column and row configurations
 
 update_gui()
 
