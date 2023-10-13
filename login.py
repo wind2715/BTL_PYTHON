@@ -121,33 +121,4 @@ loginButton = Button(login_window, text='Login',
                      bg='firebrick1', activeforeground='white', activebackground='firebrick1',
                      cursor='hand2', bd=0, width=19, command=Login)
 loginButton.place(x=578, y=475)
-# ======================================================================================
-# orLabel = Label(login_window, text='----------------OR----------------',
-#                 font=('Open Sans', 16), fg = 'firebrick1',
-#                 bg = 'white')
-# orLabel.place(x = 575, y = 400)
-#
-# facebook_logo = PhotoImage(file='facebook.png')
-# fbLabel = Label(login_window, image=facebook_logo, bg = 'white')
-# fbLabel.place(x = 640, y = 440)
-#
-# google_logo = PhotoImage(file='google.png')
-# ggLabel = Label(login_window, image=google_logo, bg = 'white')
-# ggLabel.place(x = 690, y = 440)
-#
-# twitter_logo = PhotoImage(file='twitter.png')
-# twLabel = Label(login_window, image=twitter_logo, bg = 'white')
-# twLabel.place(x = 740, y = 440)
-# #======================================================================================
-# signupLabel = Label(login_window, text = "Don't have an account yet?",
-#                     font=('Open Sans', 9, 'bold'), fg = 'firebrick1',
-#                     bg = 'white')
-# signupLabel.place(x = 580, y = 500)
-# #======================================================================================
-# newaccountButton = Button(login_window, text='Register now',
-#                      font=('Open Sans', 10, 'bold underline'), fg = 'blue',
-#                      bg = 'white', activeforeground='blue', activebackground='white',
-#                      cursor='hand2', bd=0, command=sign_up_page)
-# newaccountButton.place(x = 735, y = 498.3)
-# #======================================================================================
 login_window.mainloop()
