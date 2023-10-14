@@ -1,0 +1,37 @@
+{
+    "Thứ 2": {
+        "7h-8h": "Môn học A",
+        "8h-9h": "Môn học B",
+        "9h-10h": "Môn học C",
+        "10h-11h": "Môn học D",
+        "11h-12h": "Môn học E"
+    },
+    "Thứ 3": {
+        "7h-8h": "Môn học F",
+        "8h-9h": "Môn học G",
+        "9h-10h": "Môn học H",
+        "10h-11h": "Môn học I",
+        "11h-12h": "Môn học J"
+    },
+    "Thứ 4": {
+        "7h-8h": "Môn học K",
+        "8h-9h": "Môn học L",
+        "9h-10h": "Môn học M",
+        "10h-11h": "Môn học N",
+        "11h-12h": "Môn học O"
+    },
+    "Thứ 5": {
+        "7h-8h": "Môn học P",
+        "8h-9h": "Môn học Q",
+        "9h-10h": "Môn học R",
+        "10h-11h": "Môn học S",
+        "11h-12h": "Môn học T"
+    },
+    "Thứ 6": {
+        "7h-8h": "Môn học U",
+        "8h-9h": "Môn học V",
+        "9h-10h": "Môn học W",
+        "10h-11h": "Môn học X",
+        "11h-12h": "Môn học Y"
+    }
+}
