@@ -1,26 +1,28 @@
 import tkinter as tk
+from tkinter import ttk
+
+def on_combobox_select(event):
+    selected_option.set(day_combobox.get())
 
 root = tk.Tk()
-frame = tk.Frame(root)
-frame.grid()
+root.geometry("400x300")
+root.title("Combobox Đẹp")
 
-# Tạo và đặt trọng số cho các cột
-for i in range(3):
-    frame.columnconfigure(i, weight=1)
+frame4 = tk.Frame(root)
+frame4.pack(pady=20)
 
-# Dữ liệu mẫu
-data = ["Cột 1", "Cột 2", "Cột 3"]
+days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
-# Tạo và đặt các label vào các cột
-labels = []
-for i, text in enumerate(data):
-    label = tk.Label(frame, text=text, borderwidth=1, relief="solid")
-    label.grid(row=0, column=i, sticky="ew")
-    labels.append(label)
+selected_option = tk.StringVar()
+selected_option.set("Chọn một ngày")
 
-# Kiểm tra và điều chỉnh chiều rộng tối thiểu của cột dựa trên nội dung
-for i, label in enumerate(labels):
-    width = max(label.winfo_reqwidth(), 100)  # Đặt giá trị tối thiểu là 100
-    frame.columnconfigure(i, minsize=width)
+day_combobox = ttk.Combobox(frame4, textvariable=selected_option, values=days_of_week)
+day_combobox.bind("<<ComboboxSelected>>", on_combobox_select)
+day_combobox.set("Monday")  # Mặc định hiển thị ngày "Monday"
+day_combobox['state'] = 'readonly'  # Chỉ cho phép chọn, không cho phép nhập
+day_combobox.pack()
+
+style = ttk.Style()
+style.theme_use("winnative")  # Chọn giao diện theme "clam" (có thể sử dụng các theme khác)
 
 root.mainloop()

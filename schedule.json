@@ -1,37 +1,137 @@
 {
     "Thứ 2": {
-        "7h-8h": "Môn học A",
-        "8h-9h": "Môn học B",
-        "9h-10h": "Môn học C",
-        "10h-11h": "Môn học D",
-        "11h-12h": "Môn học E"
+        "7h-8h": {
+            "Môn học": "Môn học A",
+            "Phòng học": "Phòng A1",
+            "Giáo viên": "Người dạy A"
+        },
+        "8h-9h": {
+            "Môn học": "Môn học B",
+            "Phòng học": "Phòng A2",
+            "Giáo viên": "Người dạy B"
+        },
+        "9h-10h": {
+            "Môn học": "Môn học C",
+            "Phòng học": "Phòng A3",
+            "Giáo viên": "Người dạy C"
+        },
+        "10h-11h": {
+            "Môn học": "Môn học D",
+            "Phòng học": "Phòng A4",
+            "Giáo viên": "Người dạy D"
+        },
+        "11h-12h": {
+            "Môn học": "Môn học E",
+            "Phòng học": "Phòng A5",
+            "Giáo viên": "Người dạy E"
+        }
     },
     "Thứ 3": {
-        "7h-8h": "Môn học F",
-        "8h-9h": "Môn học G",
-        "9h-10h": "Môn học H",
-        "10h-11h": "Môn học I",
-        "11h-12h": "Môn học J"
+        "7h-8h": {
+            "Môn học": "Môn học F",
+            "Phòng học": "Phòng B1",
+            "Giáo viên": "Người dạy F"
+        },
+        "8h-9h": {
+            "Môn học": "Môn học G",
+            "Phòng học": "Phòng B2",
+            "Giáo viên": "Người dạy G"
+        },
+        "9h-10h": {
+            "Môn học": "Môn học H",
+            "Phòng học": "Phòng B3",
+            "Giáo viên": "Người dạy H"
+        },
+        "10h-11h": {
+            "Môn học": "Môn học I",
+            "Phòng học": "Phòng B4",
+            "Giáo viên": "Người dạy I"
+        },
+        "11h-12h": {
+            "Môn học": "Môn học J",
+            "Phòng học": "Phòng B5",
+            "Giáo viên": "Người dạy J"
+        }
     },
     "Thứ 4": {
-        "7h-8h": "Môn học K",
-        "8h-9h": "Môn học L",
-        "9h-10h": "Môn học M",
-        "10h-11h": "Môn học N",
-        "11h-12h": "Môn học O"
+        "7h-8h": {
+            "Môn học": "Môn học F",
+            "Phòng học": "Phòng B1",
+            "Giáo viên": "Người dạy F"
+        },
+        "8h-9h": {
+            "Môn học": "Môn học G",
+            "Phòng học": "Phòng B2",
+            "Giáo viên": "Người dạy G"
+        },
+        "9h-10h": {
+            "Môn học": "Môn học H",
+            "Phòng học": "Phòng B3",
+            "Giáo viên": "Người dạy H"
+        },
+        "10h-11h": {
+            "Môn học": "Môn học I",
+            "Phòng học": "Phòng B4",
+            "Giáo viên": "Người dạy I"
+        },
+        "11h-12h": {
+            "Môn học": "Môn học J",
+            "Phòng học": "Phòng B5",
+            "Giáo viên": "Người dạy J"
+        }
     },
     "Thứ 5": {
-        "7h-8h": "Môn học P",
-        "8h-9h": "Môn học Q",
-        "9h-10h": "Môn học R",
-        "10h-11h": "Môn học S",
-        "11h-12h": "Môn học T"
+        "7h-8h": {
+            "Môn học": "Môn học F",
+            "Phòng học": "Phòng B1",
+            "Giáo viên": "Người dạy F"
+        },
+        "8h-9h": {
+            "Môn học": "Môn học G",
+            "Phòng học": "Phòng B2",
+            "Giáo viên": "Người dạy G"
+        },
+        "9h-10h": {
+            "Môn học": "Môn học H",
+            "Phòng học": "Phòng B3",
+            "Giáo viên": "Người dạy H"
+        },
+        "10h-11h": {
+            "Môn học": "Môn học I",
+            "Phòng học": "Phòng B4",
+            "Giáo viên": "Người dạy I"
+        },
+        "11h-12h": {
+            "Môn học": "Môn học J",
+            "Phòng học": "Phòng B5",
+            "Giáo viên": "Người dạy J"
+        }
     },
     "Thứ 6": {
-        "7h-8h": "Môn học U",
-        "8h-9h": "Môn học V",
-        "9h-10h": "Môn học W",
-        "10h-11h": "Môn học X",
-        "11h-12h": "Môn học Y"
+        "7h-8h": {
+            "Môn học": "Môn học F",
+            "Phòng học": "Phòng B1",
+            "Giáo viên": "Người dạy F"
+        },
+        "8h-9h": {
+            "Môn học": "Môn học G",
+            "Phòng học": "Phòng B2",
+            "Giáo viên": "Người dạy G"
+        },
+        "9h-10h": {
+            "Môn học": "Môn học H",
+            "Phòng học": "Phòng B3",
+            "Giáo viên": "Người dạy H"
+        },
+        "10h-11h": {
+            "Môn học": "Môn học I",
+            "Phòng học": "Phòng B4",
+            "Giáo viên": "Người dạy I"
+        },
+        "11h-12h": {
+            "Môn học": "Môn học J",
+            "Phòng học": "Phòng B5",
+            "Giáo viên": "Người dạy J"
+        }
     }
 }
