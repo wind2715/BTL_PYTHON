@@ -62,7 +62,7 @@ def update_schedule_display():
             # Áp dụng kiểu dáng "center" cho văn bản trong Text Widget
             text_widget.tag_add("center", "1.0", "end")
 
-            bold_font = ("Arial", 12, "bold")
+            bold_font = ("Arial", SIZE_SMALL(screen_width, screen_height), "bold")
 
             # Đặt phong cách chữ cho dòng đầu
             text_widget.tag_configure("bold", font=bold_font)
@@ -98,9 +98,41 @@ def create_rounded_frame(width, height, radius, color):
 root = tk.Tk()
 screen_width = root.winfo_screenwidth()
 screen_height = root.winfo_screenheight() - 80
+print(screen_width, screen_height)
 root.geometry(f"{screen_width}x{screen_height}+0+0")
 # root.resizable(width=False, height=False)
 root.title("Thời Khóa Biểu Học Tập")
+def SIZE_SMALL(width, height):
+    if(width >= 1920 and height >= 1080 - 80) :
+        return 12
+    elif (width >= 1600 and height >=  900 - 80) :
+        return 10
+    elif (width >= 1280 and height >=  720 - 80) :
+        return 8
+    elif(width >= 800 and height >=  600 - 80) :
+        return 6
+    
+def SIZE_NORMAL(width, height):
+    if(width >= 1920 and height >= 1080 - 80) :
+        return 15
+    elif (width >= 1600 and height >=  900 - 80) :
+        return 13
+    elif (width >= 1280 and height >=  720 - 80) :
+        return 11
+    elif(width >= 800 and height >=  600 - 80) :
+        return 9
+    
+def SIZE_BIG(width, height):
+    if(width >= 1920 and height >= 1080 - 80) :
+        return 19
+    elif (width >= 1600 and height >=  900 - 80) :
+        return 16
+    elif (width >= 1280 and height >=  720 - 80) :
+        return 14
+    elif(width >= 800 and height >=  600 - 80) :
+        return 12
+    
+
 
 # Create a table for the schedule
 days_of_week = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"]
@@ -118,19 +150,29 @@ bgLabel = tk.Label(frame0, image=bgImage)
 bgLabel.place(x=0, y=0)
 
 # Tạo frame con 1 và đặt vào cột 0
-frame1 = tk.Frame(frame0, background='#EA4463', width=400, height=screen_height)
+frame1_width = width=screen_width / 4
+frame1_height = screen_height
+frame1 = tk.Frame(frame0, background='#EA4463', width=frame1_width, height=frame1_height)
 frame1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx= 20, pady= 40)
 
 # Tạo frame con 2 và đặt vào cột 1
-frame2 = tk.Frame(frame0, background='#EA4463', width=screen_width - 400, height=screen_height)
+frame2_width = screen_width - frame1_width
+frame2_height = screen_height
+frame2 = tk.Frame(frame0, background='#EA4463', width=frame2_width, height=frame2_height)
 frame2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx= 20, pady=40)
 
+frame5_height = frame2_height * (1/9)
+frame5_width = frame2_width
+frame4_height = frame2_height * (1/9)
+frame4_width = frame2_width
+frame3_height = frame2_height - frame4_height - frame5_height
+frame3_width = frame2_width
 frame5 = tk.Frame(frame2, background= '#EA4463')
 frame3 = tk.Frame(frame2, background= '#EA4463')
 frame4 = tk.Frame(frame2, background= '#EA4463')
 
 frame2.rowconfigure(0, weight= 1)
-frame2.rowconfigure(1, weight= 7)
+frame2.rowconfigure(1, weight= 6)
 frame2.rowconfigure(2, weight= 1)
 frame2.columnconfigure(0, weight= 1)
 
@@ -144,12 +186,12 @@ frame4.grid(row=2, column=0, sticky="nsew")
 
 #Xu ly frame1 : Thong tin sinh vien va dang xuat
 
-rounded_frame1_image = create_rounded_frame(400, screen_height - 100, 30, "white")
+rounded_frame1_image = create_rounded_frame(int(frame1_width), int(frame1_height * (8/9)), 30, "white")
 rounded_frame1_label = tk.Label(frame1, image=rounded_frame1_image, borderwidth=0)
 rounded_frame1_label.place(relx=0.5, rely=0.5, anchor="center")
 
-label_frame1_info = tk.Label(rounded_frame1_label,width= rounded_frame1_label.winfo_width() - 20, height= rounded_frame1_label.winfo_height() - 20, background= 'white')
-label_frame1_info.place(relx=0.5, rely=0.5, anchor="s")
+label_frame1_info = tk.Label(rounded_frame1_label, background= 'white')
+label_frame1_info.place(relx=0.5, rely=0.05, anchor="n")
 
 with open("studen_info.json", "r", encoding="utf-8") as json_file:
     data_info = json.load(json_file)
@@ -161,7 +203,7 @@ gioitinh = data_info["Giới tính"]
 ngaysinh = data_info["Ngày sinh"]
 nganh = data_info['Ngành học']
 
-label_ten = tk.Label(label_frame1_info, text = "Họ và tên : {}".format(tensinhvien), background = '#ffffff', fg = '#000000', font = ("Arial", 19, 'bold')).pack(pady= 5)
+label_ten = tk.Label(label_frame1_info, text = "Họ và tên : {}".format(tensinhvien), background = '#ffffff', fg = '#000000', font = ("Arial", SIZE_BIG(screen_width, screen_height), 'bold')).pack(pady= 5)
 
 # Mở hình ảnh bằng PIL
 image = Image.open("user_ava_images\Trần Hoàng Tuấn Vũ.jpg")  # Thay đổi đường dẫn đến hình ảnh của bạn
@@ -174,16 +216,16 @@ image_tk = ImageTk.PhotoImage(image)
 image_label = tk.Label(label_frame1_info, image=image_tk)
 image_label.pack(pady= 10)
 
-label_ma = tk.Label(label_frame1_info, text = "Mã sinh viên : {}".format(masinhvien), background = '#ffffff', fg = '#000000', font = ("Arial", 15, )).pack(pady= 5)
-label_lop = tk.Label(label_frame1_info, text = "Lớp : {}".format(lop), background = '#ffffff', fg = '#000000', font = ("Arial", 15, )).pack(pady= 5)
-label_gioitinh = tk.Label(label_frame1_info, text = "Giới tính : {}".format(gioitinh), background = '#ffffff', fg = '#000000', font = ("Arial", 15, )).pack(pady= 5)
-label_nganh = tk.Label(label_frame1_info, text = "Ngành : {}".format(nganh), background = '#ffffff', fg = '#000000', font = ("Arial", 15, )).pack(pady= 5)
+label_ma = tk.Label(label_frame1_info, text = "Mã sinh viên : {}".format(masinhvien), background = '#ffffff', fg = '#000000', font = ("Arial", SIZE_NORMAL(screen_width,screen_height), )).pack(pady= 5)
+label_lop = tk.Label(label_frame1_info, text = "Lớp : {}".format(lop), background = '#ffffff', fg = '#000000', font = ("Arial", SIZE_NORMAL(screen_width,screen_height), )).pack(pady= 5)
+label_gioitinh = tk.Label(label_frame1_info, text = "Giới tính : {}".format(gioitinh), background = '#ffffff', fg = '#000000', font = ("Arial", SIZE_NORMAL(screen_width,screen_height), )).pack(pady= 5)
+label_nganh = tk.Label(label_frame1_info, text = "Ngành : {}".format(nganh), background = '#ffffff', fg = '#000000', font = ("Arial", SIZE_NORMAL(screen_width,screen_height), )).pack(pady= 5)
 
-button_signout = tk.Button(rounded_frame1_label, text = "Đăng xuất", borderwidth= 1, relief= "solid", background= '#A0151A', fg= 'white', font= ("Arial", 15))
+button_signout = tk.Button(rounded_frame1_label, text = "Đăng xuất", borderwidth= 1, relief= "solid", background= '#A0151A', fg= 'white', font= ("Arial", SIZE_NORMAL(screen_width,screen_height)))
 button_signout.place(relx=0.5, rely=0.9, anchor= 's')
 
 # Create a button to update the schedule from a JSON file
-update_button = tk.Button(rounded_frame1_label, text="Cập nhật Thời Khóa Biểu", command=update_schedule_from_json, borderwidth= 1, relief= "solid", background= '#A0151A', fg= 'white', font= ("Arial", 15))
+update_button = tk.Button(rounded_frame1_label, text="Cập nhật Thời Khóa Biểu", command=update_schedule_from_json, borderwidth= 1, relief= "solid", background= '#A0151A', fg= 'white', font= ("Arial", SIZE_NORMAL(screen_width,screen_height)))
 update_button.place(relx=0.5, rely=0.83, anchor= 's')
 
 # Xu lys frame3 : TKB
@@ -214,84 +256,79 @@ frame3.columnconfigure(6, weight = 1, minsize=100)
 frame3.columnconfigure(7, weight = 1, minsize=100)
 frame3.columnconfigure(8, weight = 1, minsize=100)
 
-tk.Button(frame3, text= "TRUOC", font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF', borderwidth = 0, relief = 'solid', highlightcolor= 'white').grid(row=0, column=0, sticky=tk.W + tk.E + tk.S + tk.N)
-tk.Button(frame3, text= "SAU", font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF', borderwidth = 0, relief = 'solid', highlightcolor= 'white').grid(row=0, column=len(days_of_week) + 1, sticky=tk.W + tk.E + tk.S + tk.N)
+icon_previous = Image.open(r"icon\previous.png")
+photo_previous = ImageTk.PhotoImage(icon_previous)
+icon_next = Image.open(r"icon\next.png")
+photo_next = ImageTk.PhotoImage(icon_next)
+
+tk.Button(frame3, image= photo_previous, font = ('Arial', SIZE_NORMAL(screen_width,screen_height), 'bold'), bg= '#AD171C', fg = '#FFFFFF', borderwidth = 0, relief = 'solid', highlightcolor= 'white').grid(row=0, column=0, sticky=tk.W + tk.E + tk.S + tk.N)
+tk.Button(frame3, image= photo_next, font = ('Arial', SIZE_NORMAL(screen_width,screen_height), 'bold'), bg= '#AD171C', fg = '#FFFFFF', borderwidth = 0, relief = 'solid', highlightcolor= 'white').grid(row=0, column=len(days_of_week) + 1, sticky=tk.W + tk.E + tk.S + tk.N)
 
 for j, time_slot in enumerate(time_slots):
-    tk.Label(frame3, text=time_slot, font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF').grid(row=j+1, column=0, sticky=tk.W + tk.E + tk.S + tk.N)
+    tk.Label(frame3, text=time_slot, font = ('Arial', SIZE_NORMAL(screen_width,screen_height), 'bold'), bg= '#AD171C', fg = '#FFFFFF').grid(row=j+1, column=0, sticky=tk.W + tk.E + tk.S + tk.N)
 
 for j, lession_slot in enumerate(lession_slots):
-    tk.Label(frame3, text=lession_slot, font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF').grid(row=j+1, column=len(days_of_week) + 1, sticky=tk.W + tk.E + tk.S + tk.N)
+    tk.Label(frame3, text=lession_slot, font = ('Arial', SIZE_NORMAL(screen_width,screen_height), 'bold'), bg= '#AD171C', fg = '#FFFFFF').grid(row=j+1, column=len(days_of_week) + 1, sticky=tk.W + tk.E + tk.S + tk.N)
 
 
 for i, day in enumerate(days_of_week):
-    tk.Label(frame3, text=day, font=('Arial', 15, 'bold'), bg='#AD171C', fg='#FFFFFF').grid(row=0, column=i+1, sticky=tk.W + tk.E + tk.S + tk.N)
+    tk.Label(frame3, text=day, font=('Arial', SIZE_NORMAL(screen_width,screen_height), 'bold'), bg='#AD171C', fg='#FFFFFF').grid(row=0, column=i+1, sticky=tk.W + tk.E + tk.S + tk.N)
     for j, time_slot in enumerate(time_slots):
-        text_widget = tk.Text(frame3, height=1, width=50, font = ("Arial", 10), state = tk.DISABLED)
+        text_widget = tk.Text(frame3, height=1, width=40, font = ("Arial", SIZE_SMALL(screen_width, screen_height) - 2), state = tk.DISABLED)
         text_widget.grid(row=j+1, column=i+1, sticky=tk.W + tk.E + tk.S + tk.N)
         subject_entries[(day, time_slot)] = text_widget
 
 #Xử lý frame 4 :Thêm ghi chú 
 
 
-rounded_frame4_image = create_rounded_frame(1400, 52, 20, "white")
+rounded_frame4_image = create_rounded_frame(int(frame2_width * (8/9)), int(49 * (screen_height / 1000)), 15, "white")
 rounded_frame4_label = tk.Label(frame4, image=rounded_frame4_image, borderwidth=0)
-rounded_frame4_label.place(relx=0.5, rely=0, anchor="n")
-
+rounded_frame4_label.place(relx=0.5, rely=0.5, anchor="center")
 
 label_frame4_info = tk.Label(rounded_frame4_label,width= 175, height= 2, background= 'white')
 label_frame4_info.place(relx= 0.5, rely = 0.5, anchor= 'center')
 
-label_frame4_info.rowconfigure(0, weight=1)
-label_frame4_info.columnconfigure(0, weight= 1)
-label_frame4_info.columnconfigure(1, weight= 1)
-label_frame4_info.columnconfigure(2, weight= 1)
-label_frame4_info.columnconfigure(3, weight= 1)
-label_frame4_info.columnconfigure(4, weight= 1)
-label_frame4_info.columnconfigure(5, weight= 1)
-label_frame4_info.columnconfigure(6, weight= 1)
 
+subject_label = tk.Label(label_frame4_info, text="Ghi chú", bg= '#AD171C', font = ("Arial", SIZE_SMALL(screen_width,screen_height), 'bold'), fg = 'white', width= 10)
+subject_label.pack(side=tk.LEFT, padx = 5)
 
-subject_label = tk.Label(frame4, text="Ghi chú", bg= '#AD171C', font = ("Arial", 12, 'bold'), fg = 'white', width= 10)
-subject_label.place(relx= 0.18, rely= 0.4, anchor= 'center')
+subject_entry = tk.Entry(label_frame4_info, borderwidth= 1, relief='solid', font = ("Arial", SIZE_SMALL(screen_width,screen_height)))
+subject_entry.pack(side=tk.LEFT, padx = 5)
 
-subject_entry = tk.Entry(frame4, borderwidth= 1, relief='solid', font = ("Arial", 12))
-subject_entry.place(relx= 0.29, rely= 0.4, anchor= 'center')
-
-time_label = tk.Label(frame4, text="Thời gian", bg= '#AD171C', font = ("Arial", 12, 'bold'), fg = 'white', width= 10)
-time_label.place(relx= 0.4, rely= 0.4, anchor= 'center')
+time_label = tk.Label(label_frame4_info, text="Thời gian", bg= '#AD171C', font = ("Arial", SIZE_SMALL(screen_width,screen_height), 'bold'), fg = 'white', width= 10)
+time_label.pack(side=tk.LEFT, padx = 5)
 
 style = ttk.Style()
 style.theme_use("winnative")
-style.configure("TCombobox", font=("Arial", 12))
+style.configure("TCombobox", font=("Arial", SIZE_SMALL(screen_width,screen_height)))
 
 time_combobox = tk.StringVar(value=time_slots[0])
-time_combobox_widget = ttk.Combobox(frame4, textvariable=time_combobox, values=time_slots, state="readonly")
-time_combobox_widget.place(relx= 0.495, rely= 0.4, anchor= 'center')
+time_combobox_widget = ttk.Combobox(label_frame4_info, textvariable=time_combobox, values=time_slots, state="readonly")
+time_combobox_widget.pack(side=tk.LEFT, padx = 5)
 
-day_label = tk.Label(frame4, text="Thứ", bg= '#AD171C', font = ("Arial", 12, 'bold'), fg = 'white', width= 5)
-day_label.place(relx= 0.575, rely= 0.4, anchor= 'center')
+day_label = tk.Label(label_frame4_info, text="Thứ", bg= '#AD171C', font = ("Arial", SIZE_SMALL(screen_width,screen_height), 'bold'), fg = 'white', width= 5)
+day_label.pack(side=tk.LEFT, padx = 5)
 
 day_combobox = tk.StringVar(value=days_of_week[0])
 
-day_combobox_widget = ttk.Combobox(frame4, textvariable=day_combobox, values=days_of_week, state="readonly")
-day_combobox_widget.place(relx=0.655, rely=0.4, anchor='center')
+day_combobox_widget = ttk.Combobox(label_frame4_info, textvariable=day_combobox, values=days_of_week, state="readonly")
+day_combobox_widget.pack(side=tk.LEFT, padx = 5)
 
-add_button = tk.Button(frame4, text="Thêm Ghi Chú", bg= '#AD171C', font = ("Arial", 12, 'bold'), fg = 'white', command=lambda: add_subject1(day_combobox.get(), subject_entry.get(), time_combobox.get()))
-add_button.place(relx= 0.8, rely= 0.4, anchor= 'center')
+add_button = tk.Button(label_frame4_info, text="Thêm Ghi Chú", bg= '#AD171C', font = ("Arial", SIZE_SMALL(screen_width,screen_height), 'bold'), fg = 'white', command=lambda: add_subject1(day_combobox.get(), subject_entry.get(), time_combobox.get()))
+add_button.pack(side=tk.LEFT, padx = 5)
 
 #Xử lý frame 5 : Thay đổi tuần 
 
 
-rounded_frame5_image = create_rounded_frame(800, 50, 20, "white")
+rounded_frame5_image = create_rounded_frame(int(frame2_width * (5/9)), int(49 * (screen_height / 1000)), 15, "white")
 rounded_frame5_label = tk.Label(frame5, image=rounded_frame5_image, borderwidth=0)
-rounded_frame5_label.place(relx=0.5, rely=0, anchor="n")
+rounded_frame5_label.place(relx=0.5, rely=0.5, anchor="center")
 
 def get_week_label(start_date):
     end_date = start_date + datetime.timedelta(days=6)
     return f"Ngày {start_date.strftime('%d/%m/%Y')} đến {end_date.strftime('%d/%m/%Y')}"
 
-combobox_weeks = ttk.Combobox(frame5, width= 50, height= 10, font = ("Arial", 12), justify= 'center')
+combobox_weeks = ttk.Combobox(frame5, width= 50, height= 10, font = ("Arial", SIZE_SMALL(screen_width,screen_height)), justify= 'center')
 combobox_weeks.place(relx= 0.5, rely= 0.5, anchor='center')
 
 label = tk.Label(root)
