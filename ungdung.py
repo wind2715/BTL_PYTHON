@@ -4,6 +4,7 @@ from tkinter import ttk
 import json
 from PIL import Image, ImageTk, ImageDraw
 import webcolors
+import datetime
 
 def center_text(entry):
     text = entry.get()
@@ -12,32 +13,74 @@ def center_text(entry):
     entry.delete(0, tk.END)
     entry.insert(0, text)
 
-def add_subject(day, subject, time):
-    if(subject != {}) :
-        schedule[time][day] = subject['Môn học'] + "\n" + subject['Phòng học'] + "\n" + subject['Giáo viên']
+def add_subject1(day, subject, time):
+    update_schedule_to_data_private(day, subject, time)
+
+def update_schedule_to_data_private(day, subject, time):
+    with open("data_private.json", "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+    day_first_selected = combobox_weeks.get()[5:15]
+    with open("weeks_time.json", "r", encoding="utf-8") as json2_file:
+        week_select = json.load(json2_file)
+    # Bước 2: Thay đổi dữ liệu
+    data[week_select[day_first_selected]][day][time] = subject
+
+    # Bước 3: Lưu tệp JSON
+    with open('data_private.json', 'w',encoding="utf-8") as json_file:
+        json.dump(data, json_file,indent=4, ensure_ascii=False)
+
+def add_subject2(day, subject, time):
+    if(subject != {} and(subject['Môn học'] != '')) :
+        schedule[time][day] = subject['Môn học'] + "\n" + subject['Phòng học']
+    else :
+        schedule[time][day] = ""
     update_schedule_display()
 
 def update_schedule_display():
+    with open("data_private.json", "r", encoding="utf-8") as json_file:
+        data = json.load(json_file)
+    day_first_selected = combobox_weeks.get()[5:15]
+    with open("weeks_time.json", "r", encoding="utf-8") as json2_file:
+        week_select = json.load(json2_file)
     for day in days_of_week:
         for time_slot in time_slots:
             subject = schedule[time_slot][day]
-            subject_entries[(day, time_slot)].configure(state = tk.NORMAL)
-            if(subject != '') :
-                subject_entries[(day, time_slot)].configure(disabledbackground = '#CFE2FF')
-            else :
-                subject_entries[(day, time_slot)].configure(disabledbackground = 'white')
-            subject_entries[(day, time_slot)].delete(0, tk.END)
-            subject_entries[(day, time_slot)].insert(0, subject)
-            subject_entries[(day, time_slot)].configure(state = tk.DISABLED)
-            center_text(subject_entries[(day, time_slot)])
+            if data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, "") != '' :
+                subject  += " ( " + data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, "") + " )"
+            text_widget = subject_entries[(day, time_slot)]
+            text_widget.configure(state=tk.NORMAL)
+            text_widget.delete('1.0', tk.END)  # Xóa toàn bộ nội dung trong Text widget
+            if subject != '':
+                text_widget.configure(background='#CFE2FF')
+            else:
+                text_widget.configure(background='white')
+            text_widget.insert(tk.END, subject)  # Chèn dữ liệu mới từ đầu
+            text_widget.configure(state=tk.DISABLED)
+            # Tạo một kiểu dáng (tag) tùy chỉnh để căn giữa
+            text_widget.tag_configure("center", justify = 'center', spacing1 = 5, spacing2 = 1)
+
+            # Áp dụng kiểu dáng "center" cho văn bản trong Text Widget
+            text_widget.tag_add("center", "1.0", "end")
+
+            bold_font = ("Arial", 12, "bold")
+
+            # Đặt phong cách chữ cho dòng đầu
+            text_widget.tag_configure("bold", font=bold_font)
+            text_widget.tag_add("bold", "1.0", "1.end")
+
+            
+           
 
 def update_schedule_from_json():
-    with open("schedule.json", "r", encoding="utf-8") as json_file:
-        data = json.load(json_file)
+    day_first_selected = combobox_weeks.get()[5:15]
+    with open("schedule.json", "r", encoding="utf-8") as json1_file:
+        data = json.load(json1_file)
+    with open("weeks_time.json", "r", encoding="utf-8") as json2_file:
+        week_select = json.load(json2_file)
     for day in days_of_week:
         for time_slot in time_slots:
-            subject = data.get(day, {}).get(time_slot, {})
-            add_subject(day, subject, time_slot)
+            subject = data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, {})
+            add_subject2(day, subject, time_slot)
 
 def create_rounded_frame(width, height, radius, color):
     image = Image.new("RGBA", (width, height), webcolors.hex_to_rgb('#EA4463'))
@@ -61,8 +104,8 @@ root.title("Thời Khóa Biểu Học Tập")
 
 # Create a table for the schedule
 days_of_week = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"]
-time_slots = ["7h-8h", "8h-9h", "9h-10h", "10h-11h", "11h-12h", "12h-13h", "13h-14h", "14h-15h", "15h-16h", "16h-17h", "17h-18h"]
-lession_slots = ["Tiết 1", "Tiết 2", "Tiết 3", "Tiết 4", "Tiết 5", "Tiết 6", "Tiết 7", "Tiết 8", "Tiết 9", "Tiết 10", "Tiết 11"]
+time_slots = ["7h-8h", "8h-9h", "9h-10h", "10h-11h", "11h-12h", "12h-13h", "13h-14h", "14h-15h", "15h-16h", "16h-17h", "17h-18h", "18h-19h", "19h-20h", "20h-21h"]
+lession_slots = ["Tiết 1", "Tiết 2", "Tiết 3", "Tiết 4", "Tiết 5", "Tiết 6", "Tiết 7", "Tiết 8", "Tiết 9", "Tiết 10", "Tiết 11", "Tiết 12", "Tiết 13", "Tiết 14"]
 schedule = {time: {day: "" for day in days_of_week} for time in time_slots}
 subject_entries = {(day, time_slot): None for day in days_of_week for time_slot in time_slots}
 
@@ -82,14 +125,18 @@ frame1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx= 20, pady= 40)
 frame2 = tk.Frame(frame0, background='#EA4463', width=screen_width - 400, height=screen_height)
 frame2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx= 20, pady=40)
 
+frame5 = tk.Frame(frame2, background= '#EA4463')
 frame3 = tk.Frame(frame2, background= '#EA4463')
 frame4 = tk.Frame(frame2, background= '#EA4463')
-frame2.rowconfigure(0, weight= 8)
-frame2.rowconfigure(1, weight= 1)
+
+frame2.rowconfigure(0, weight= 1)
+frame2.rowconfigure(1, weight= 7)
+frame2.rowconfigure(2, weight= 1)
 frame2.columnconfigure(0, weight= 1)
 
-frame3.grid(row=0, column=0, sticky="nsew", pady = 10)
-frame4.grid(row=1, column=0, sticky="nsew")
+frame5.grid(row=0, column=0, sticky="nsew")
+frame3.grid(row=1, column=0, sticky="nsew", pady = 10)
+frame4.grid(row=2, column=0, sticky="nsew")
 
 # frame1.pack(side = tk.TOP, fill = tk.BOTH, expand = True, pady = 20)
 # frame2.pack(side = tk.TOP, fill = tk.BOTH, expand = True, padx= 10, pady= 20)
@@ -104,12 +151,15 @@ rounded_frame1_label.place(relx=0.5, rely=0.5, anchor="center")
 label_frame1_info = tk.Label(rounded_frame1_label,width= rounded_frame1_label.winfo_width() - 20, height= rounded_frame1_label.winfo_height() - 20, background= 'white')
 label_frame1_info.place(relx=0.5, rely=0.5, anchor="s")
 
-tensinhvien = "Trần Hoàng Tuấn Vũ"
-masinhvien = "B21DCCN800"
-lop = "D21CQCN08-B"
-gioitinh = "Nam"
-ngaysinh = "21/20/2003"
-nganh = "Công nghệ thông tin"
+with open("studen_info.json", "r", encoding="utf-8") as json_file:
+    data_info = json.load(json_file)
+
+tensinhvien = data_info['Họ và tên']
+masinhvien = data_info['Mã sinh viên']
+lop = data_info['Lớp']
+gioitinh = data_info["Giới tính"]
+ngaysinh = data_info["Ngày sinh"]
+nganh = data_info['Ngành học']
 
 label_ten = tk.Label(label_frame1_info, text = "Họ và tên : {}".format(tensinhvien), background = '#ffffff', fg = '#000000', font = ("Arial", 19, 'bold')).pack(pady= 5)
 
@@ -136,7 +186,7 @@ button_signout.place(relx=0.5, rely=0.9, anchor= 's')
 update_button = tk.Button(rounded_frame1_label, text="Cập nhật Thời Khóa Biểu", command=update_schedule_from_json, borderwidth= 1, relief= "solid", background= '#A0151A', fg= 'white', font= ("Arial", 15))
 update_button.place(relx=0.5, rely=0.83, anchor= 's')
 
-# Xu lys frame2 : TKB
+# Xu lys frame3 : TKB
 
 frame3.rowconfigure(0, weight = 1)
 frame3.rowconfigure(1, weight = 1)
@@ -150,6 +200,9 @@ frame3.rowconfigure(8, weight = 1)
 frame3.rowconfigure(9, weight = 1)
 frame3.rowconfigure(10, weight = 1)
 frame3.rowconfigure(11, weight = 1)
+frame3.rowconfigure(12, weight = 1)
+frame3.rowconfigure(13, weight = 1)
+frame3.rowconfigure(14, weight = 1)
 
 frame3.columnconfigure(0, weight = 1, minsize=100)
 frame3.columnconfigure(1, weight = 1, minsize=100)
@@ -161,8 +214,8 @@ frame3.columnconfigure(6, weight = 1, minsize=100)
 frame3.columnconfigure(7, weight = 1, minsize=100)
 frame3.columnconfigure(8, weight = 1, minsize=100)
 
-tk.Label(frame3, text= "TRUOC", font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF').grid(row=0, column=0, sticky=tk.W + tk.E + tk.S + tk.N)
-tk.Label(frame3, text= "SAU", font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF').grid(row=0, column=len(days_of_week) + 1, sticky=tk.W + tk.E + tk.S + tk.N)
+tk.Button(frame3, text= "TRUOC", font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF', borderwidth = 0, relief = 'solid', highlightcolor= 'white').grid(row=0, column=0, sticky=tk.W + tk.E + tk.S + tk.N)
+tk.Button(frame3, text= "SAU", font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF', borderwidth = 0, relief = 'solid', highlightcolor= 'white').grid(row=0, column=len(days_of_week) + 1, sticky=tk.W + tk.E + tk.S + tk.N)
 
 for j, time_slot in enumerate(time_slots):
     tk.Label(frame3, text=time_slot, font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF').grid(row=j+1, column=0, sticky=tk.W + tk.E + tk.S + tk.N)
@@ -172,13 +225,13 @@ for j, lession_slot in enumerate(lession_slots):
 
 
 for i, day in enumerate(days_of_week):
-    tk.Label(frame3, text=day, font = ('Arial', 15, 'bold'), bg= '#AD171C', fg = '#FFFFFF').grid(row=0, column=i+1, sticky=tk.W + tk.E + tk.S + tk.N)
+    tk.Label(frame3, text=day, font=('Arial', 15, 'bold'), bg='#AD171C', fg='#FFFFFF').grid(row=0, column=i+1, sticky=tk.W + tk.E + tk.S + tk.N)
     for j, time_slot in enumerate(time_slots):
-        entry = tk.Entry(frame3, width= 19, state = tk.DISABLED, font = ("Arial", 12, 'bold'), disabledforeground="#000000", disabledbackground="white")
-        entry.grid(row=j+1, column=i+1, sticky= tk.W + tk.E + tk.S + tk.N)
-        subject_entries[(day, time_slot)] = entry
+        text_widget = tk.Text(frame3, height=1, width=50, font = ("Arial", 10), state = tk.DISABLED)
+        text_widget.grid(row=j+1, column=i+1, sticky=tk.W + tk.E + tk.S + tk.N)
+        subject_entries[(day, time_slot)] = text_widget
 
-#Xử lý frame 4 các chức năng 
+#Xử lý frame 4 :Thêm ghi chú 
 
 
 rounded_frame4_image = create_rounded_frame(1400, 52, 20, "white")
@@ -199,7 +252,7 @@ label_frame4_info.columnconfigure(5, weight= 1)
 label_frame4_info.columnconfigure(6, weight= 1)
 
 
-subject_label = tk.Label(frame4, text="Môn học", bg= '#AD171C', font = ("Arial", 12, 'bold'), fg = 'white', width= 10)
+subject_label = tk.Label(frame4, text="Ghi chú", bg= '#AD171C', font = ("Arial", 12, 'bold'), fg = 'white', width= 10)
 subject_label.place(relx= 0.18, rely= 0.4, anchor= 'center')
 
 subject_entry = tk.Entry(frame4, borderwidth= 1, relief='solid', font = ("Arial", 12))
@@ -224,8 +277,49 @@ day_combobox = tk.StringVar(value=days_of_week[0])
 day_combobox_widget = ttk.Combobox(frame4, textvariable=day_combobox, values=days_of_week, state="readonly")
 day_combobox_widget.place(relx=0.655, rely=0.4, anchor='center')
 
-add_button = tk.Button(frame4, text="Thêm Môn Học", bg= '#AD171C', font = ("Arial", 12, 'bold'), fg = 'white', command=lambda: add_subject(day_combobox.get(), subject_entry.get(), time_combobox.get()))
+add_button = tk.Button(frame4, text="Thêm Ghi Chú", bg= '#AD171C', font = ("Arial", 12, 'bold'), fg = 'white', command=lambda: add_subject1(day_combobox.get(), subject_entry.get(), time_combobox.get()))
 add_button.place(relx= 0.8, rely= 0.4, anchor= 'center')
 
+#Xử lý frame 5 : Thay đổi tuần 
+
+
+rounded_frame5_image = create_rounded_frame(800, 50, 20, "white")
+rounded_frame5_label = tk.Label(frame5, image=rounded_frame5_image, borderwidth=0)
+rounded_frame5_label.place(relx=0.5, rely=0, anchor="n")
+
+def get_week_label(start_date):
+    end_date = start_date + datetime.timedelta(days=6)
+    return f"Ngày {start_date.strftime('%d/%m/%Y')} đến {end_date.strftime('%d/%m/%Y')}"
+
+combobox_weeks = ttk.Combobox(frame5, width= 50, height= 10, font = ("Arial", 12), justify= 'center')
+combobox_weeks.place(relx= 0.5, rely= 0.5, anchor='center')
+
+label = tk.Label(root)
+label.pack()
+
+start_date = datetime.date(2023, 8, 14)
+data_week = {}
+weeks = []
+for i in range(17) :
+    data_week[(start_date + datetime.timedelta(weeks=i)).strftime('%d/%m/%Y')] = "Tuần " + str(i+1)
+    weeks.append(get_week_label(start_date + datetime.timedelta(weeks=i)))
+with open('weeks_time.json', 'w',encoding="utf-8") as json_file:
+    json.dump(data_week, json_file,indent=4, ensure_ascii=False)
+combobox_weeks['values'] = weeks
+
+# Lấy ngày tháng năm của hôm nay
+day_current = datetime.date.today()
+
+# Tính toán ngày đầu tuần bằng cách lùi ngày về ngày thứ hai (0 là thứ hai, 1 là thứ ba, v.v.)
+day_first_week = day_current - datetime.timedelta(days=day_current.weekday())
+
+# Tính toán ngày cuối tuần bằng cách cộng ngày với 6 (ngày thứ bảy)
+day_end_week = day_current + datetime.timedelta(days=(6 - day_current.weekday()))
+
+combobox_weeks.set(f"Ngày {day_first_week.strftime('%d/%m/%Y')} đến {day_end_week.strftime('%d/%m/%Y')}")
+
+tmp = combobox_weeks.get()
+tmp = tmp[5:15]
+print(tmp)
 # Open the window
 root.mainloop()

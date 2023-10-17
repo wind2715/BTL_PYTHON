@@ -1,28 +1,44 @@
 import tkinter as tk
-from tkinter import ttk
+from datetime import datetime, timedelta
 
-def on_combobox_select(event):
-    selected_option.set(day_combobox.get())
+def chuyen_doi_tuan(tuan_hien_tai, buoc):
+    ngay_dau_tuan = tuan_hien_tai - timedelta(days=tuan_hien_tai.weekday())
+    ngay_cuoi_tuan = ngay_dau_tuan + timedelta(days=6)
+    
+    tuan_moi = tuan_hien_tai + timedelta(weeks=buoc)
+    
+    ngay_dau_tuan_moi = tuan_moi - timedelta(days=tuan_moi.weekday())
+    ngay_cuoi_tuan_moi = ngay_dau_tuan_moi + timedelta(days=6)
+    
+    return ngay_dau_tuan_moi, ngay_cuoi_tuan_moi
 
-root = tk.Tk()
-root.geometry("400x300")
-root.title("Combobox Đẹp")
+def chuyen_tuan_truoc():
+    global tuan_hien_tai
+    tuan_hien_tai, _ = chuyen_doi_tuan(tuan_hien_tai, -1)
+    hien_thi_tuan()
 
-frame4 = tk.Frame(root)
-frame4.pack(pady=20)
+def chuyen_tuan_sau():
+    global tuan_hien_tai
+    _, tuan_hien_tai = chuyen_doi_tuan(tuan_hien_tai, 1)
+    hien_thi_tuan()
 
-days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+def hien_thi_tuan():
+    global tuan_hien_tai
+    lbl_tuan.config(text=tuan_hien_tai.strftime('%d/%m/%Y'))
 
-selected_option = tk.StringVar()
-selected_option.set("Chọn một ngày")
+tuan_hien_tai = datetime.today()
+app = tk.Tk()
+app.title("Chuyen Doi Tuan")
 
-day_combobox = ttk.Combobox(frame4, textvariable=selected_option, values=days_of_week)
-day_combobox.bind("<<ComboboxSelected>>", on_combobox_select)
-day_combobox.set("Monday")  # Mặc định hiển thị ngày "Monday"
-day_combobox['state'] = 'readonly'  # Chỉ cho phép chọn, không cho phép nhập
-day_combobox.pack()
+lbl_tuan = tk.Label(app, text=tuan_hien_tai.strftime('%d/%m/%Y'))
+lbl_tuan.pack()
 
-style = ttk.Style()
-style.theme_use("winnative")  # Chọn giao diện theme "clam" (có thể sử dụng các theme khác)
+btn_tuan_truoc = tk.Button(app, text="Tuần Trước", command=chuyen_tuan_truoc)
+btn_tuan_truoc.pack()
 
-root.mainloop()
+btn_tuan_sau = tk.Button(app, text="Tuần Sau", command=chuyen_tuan_sau)
+btn_tuan_sau.pack()
+
+hien_thi_tuan()
+
+app.mainloop()
