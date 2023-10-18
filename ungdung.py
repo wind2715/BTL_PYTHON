@@ -21,6 +21,7 @@ def update_schedule_to_data_private(day, subject, time):
     # Bước 3: Lưu tệp JSON
     with open('data_private.json', 'w',encoding="utf-8") as json_file:
         json.dump(data, json_file,indent=4, ensure_ascii=False)
+    update_schedule_from_json()
 
 
 # Hàm thực hiện việc lấy dữ liệu từ file json khi bấm cập nhật dữ liệu
@@ -55,7 +56,10 @@ def update_schedule_display():
         for time_slot in time_slots:
             subject = schedule[time_slot][day]
             if data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, "") != '' :
-                subject  += " ( " + data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, "") + " )"
+                if(subject != ''):
+                    subject  += " ( " + data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, "") + " )"
+                else :
+                    subject  += data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, "")
             text_widget = subject_entries[(day, time_slot)]
             text_widget.configure(state=tk.NORMAL) # Trạng thái bình thường
             text_widget.delete('1.0', tk.END)  # Xóa toàn bộ nội dung trong Text widget
@@ -126,6 +130,7 @@ screen_height = root.winfo_screenheight() - 80
 root.geometry(f"{screen_width}x{screen_height}+0+0")
 root.resizable(width=False, height=False)
 root.title("Thời Khóa Biểu Học Tập")
+
 
 # Khai báo các mảng thứ, giờ học, tiết học
 days_of_week = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"] #Mảng thứ
@@ -258,11 +263,13 @@ def get_previous_value():
     current_index = combobox_weeks.current()
     if(current_index >= 0) :
         combobox_weeks.set(combobox_weeks['values'][current_index-1])
+        update_schedule_from_json()
 
 # Hàm cập nhật dữ liệu trên combobox_weeks thành ngày sau ngày hiện tại
 def get_next_value():
     current_index = combobox_weeks.current()
     combobox_weeks.set(combobox_weeks['values'][current_index+1])
+    update_schedule_from_json()
 
 tk.Button(frame3, image= photo_previous, command= get_previous_value, font = (FONT_MAIN, SIZE_NORMAL(screen_width,screen_height), 'bold'), bg= COLOR_MAIN, fg = COLOR_TEXT, borderwidth = 0, relief = 'solid', highlightcolor= 'white').grid(row=0, column=0, sticky=tk.W + tk.E + tk.S + tk.N)
 tk.Button(frame3, image= photo_next, command= get_next_value, font = (FONT_MAIN, SIZE_NORMAL(screen_width,screen_height), 'bold'), bg= COLOR_MAIN, fg = COLOR_TEXT, borderwidth = 0, relief = 'solid', highlightcolor= 'white').grid(row=0, column=len(days_of_week) + 1, sticky=tk.W + tk.E + tk.S + tk.N)
@@ -335,7 +342,7 @@ def get_week_label(start_date):
     return f"Ngày {start_date.strftime('%d/%m/%Y')} đến {end_date.strftime('%d/%m/%Y')}"
 
 #Tạo combobox chứa dữ liệu các tuần
-combobox_weeks = ttk.Combobox(frame5, width= 50, height= 10, font = (FONT_MAIN, SIZE_SMALL(screen_width,screen_height)), justify= 'center')
+combobox_weeks = ttk.Combobox(frame5, width= 50, height= 10, font = (FONT_MAIN, SIZE_SMALL(screen_width,screen_height)), justify= 'center', state= 'readonly')
 combobox_weeks.place(relx= 0.5, rely= 0.5, anchor='center')
 
 # Ngày bắt đầu khai báo
@@ -363,5 +370,10 @@ day_end_week = day_current + datetime.timedelta(days=(6 - day_current.weekday())
 #Set mặc định hiển thị trên combobox
 combobox_weeks.set(f"Ngày {day_first_week.strftime('%d/%m/%Y')} đến {day_end_week.strftime('%d/%m/%Y')}")
 
+def get_event_box(event) :
+    update_schedule_from_json()
+combobox_weeks.bind("<<ComboboxSelected>>", get_event_box)
+
+update_schedule_from_json()
 # Open the window
 root.mainloop()

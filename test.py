@@ -1,28 +1,28 @@
 import tkinter as tk
 from tkinter import ttk
 
-def get_previous_value():
-    current_value = combobox.get()
-    current_index = combobox.current()
+# Hàm lắng nghe sự kiện khi giá trị trong Combobox thay đổi
+def on_combobox_select(event):
+    selected_value = combo_var.get()  # Lấy giá trị đã chọn
+    result_label.config(text=f"Đã chọn: {selected_value}")
 
-    if current_index > 0:
-        previous_index = current_index - 1
-        previous_value = combobox['values'][previous_index]
-        print(f"Giá trị đứng trên {current_value} là {previous_value}")
-    else:
-        print(f"{current_value} là giá trị đầu tiên, không có giá trị đứng trên")
-
+# Tạo cửa sổ gốc
 root = tk.Tk()
-root.title("Lấy giá trị đứng trên Combobox")
+root.title("Combobox và tự động thay đổi Label")
 
-# Tạo combobox
-combobox = ttk.Combobox(root)
-combobox['values'] = ["Mục 1", "Mục 2", "Mục 3"]
+# Tạo biến StringVar để lưu giá trị của Combobox
+combo_var = tk.StringVar()
 
-combobox.pack()
+# Tạo Combobox
+combo = ttk.Combobox(root, textvariable=combo_var, values=["Giá trị 1", "Giá trị 2", "Giá trị 3"])
+combo.pack()
 
-# Tạo button để lấy giá trị đứng trên
-button = tk.Button(root, text="Lấy giá trị đứng trên", command=get_previous_value)
-button.pack()
+# Tạo một Label để hiển thị kết quả
+result_label = tk.Label(root, text="")
+result_label.pack()
 
+# Khi giá trị trong Combobox thay đổi, gọi hàm on_combobox_select
+combo.bind("<<ComboboxSelected>>", on_combobox_select)
+
+# Hiển thị cửa sổ
 root.mainloop()
