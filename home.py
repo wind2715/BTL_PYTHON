@@ -6,7 +6,7 @@ from PIL import Image, ImageTk, ImageDraw
 import webcolors
 import datetime
 import token_storage
-from get_data_api import get_ds_nhom_to
+from get_data_api import get_ds_nhom_to, get_token
 from firebase_config import db
 
 
@@ -15,11 +15,12 @@ def get_datas():
     doc_ref = db.collection("sinhVien").document(token).get().to_dict()
     msv = doc_ref['msv']
     password = doc_ref['password']
-    data = get_ds_nhom_to(msv, password)
+    data = get_ds_nhom_to(get_token(msv, password))
     return data
 
 
 datas = get_datas()
+print(datas)
 
 
 def center_text(entry):

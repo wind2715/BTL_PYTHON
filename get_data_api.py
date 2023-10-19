@@ -29,20 +29,39 @@ def get_token(username, password):
 
 def get_ds_nhom_to(access_token):
     session = requests.Session()
-    api_url = 'https://qldt.ptit.edu.vn/api/sch/w-locdstkbhockytheodoituong'
+    api_url = 'https://qldt.ptit.edu.vn/api/sch/w-locdstkbtuanusertheohocky'
     headers = {
         'Content-type': 'application/json',
         'Authorization': f'Bearer {access_token}'
     }
 
     payload = {
-        "hoc_ky": 20231,
-        "loai_doi_tuong": 1,
-        "id_du_lieu": None
+        "filter":
+            {
+                "hoc_ky": 20231,
+                "ten_hoc_ky": ""
+            },
+        "additional":
+            {
+                "paging": {
+                    "limit": 100,
+                    "page": 1
+                },
+                "ordering":[
+                    {
+                        "name": None,
+                        "order_type": None
+                    }
+                ]
+            }
     }
     response = session.post(api_url, headers=headers, json=payload)
-    ds_nhom_to = response.json()['data']['ds_nhom_to']
-    return ds_nhom_to
+    if response.status_code == 200:
+
+        ds_nhom_to = response.json()['data']['ds_tuan_tkb']
+        return ds_nhom_to
+    else:
+        print("no")
 
 
 def get_image(msv, access_token):
