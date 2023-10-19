@@ -1,9 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
-
 from PIL import ImageTk, Image
 from firebase_config import firebase, auth
-
+import token_storage
 
 # Func Part
 def user_enter(event):
@@ -17,32 +16,35 @@ def password_enter(event):
 
 
 def hide():
-    openeye.config(file='images/closeye.png')
+    openeye.config(file='images/login_screen/closeye.png')
     passwordEntry.config(show='*')
     eyeButton.config(command=show)
 
 
 def show():
-    openeye.config(file='images/openeye.png')
+    openeye.config(file='images/login_screen/openeye.png')
     passwordEntry.config(show='')
     eyeButton.config(command=hide)
 
 
 # def sign_up_page():
 #     login_window.destroy()
-#     import Signup
+#     import schedule
 
 def Login():
 
     username = usernameEntry.get()
     password = passwordEntry.get()
     try:
-        auth.sign_in_with_email_and_password(username, password)
-        messagebox.showinfo("Thong bao", "Dang nhap thanh cong")
+        user = auth.sign_in_with_email_and_password(username, password)
+        token = user['localId']
+        token_storage.stored_token = token
+        login_window.destroy()
+        open_window_home()
     except Exception:
         messagebox.showerror("Lỗi", f"Đăng nhập không thành công.")
-    # import weekly
-
+def open_window_home():
+    import home
 
 # GUI Part
 
@@ -63,11 +65,11 @@ login_window.resizable(0, 0)
 login_window.title('Login Page')
 print(screen_height, screen_width)
 # ======================================================================================
-bgImage = ImageTk.PhotoImage(file='images/bg.jpg')
+bgImage = ImageTk.PhotoImage(file='images/login_screen/bg.jpg')
 bgLabel = Label(login_window, image=bgImage)
 bgLabel.place(x=0, y=0)
 # ======================================================================================
-logoimg = PhotoImage(file='images/logoPtit.png')
+logoimg = PhotoImage(file='images/login_screen/logoPtit.png')
 
 # Thay đổi kích thước hình ảnh (ví dụ: giảm kích thước 50%)
 new_width = int(logoimg.width() * 0.5)
@@ -104,7 +106,7 @@ passwordEntry.bind('<FocusIn>', password_enter)
 frame2 = Frame(login_window, width=250, height=2, bg='firebrick1')
 frame2.place(x=580, y=422)
 # ======================================================================================
-openeye = PhotoImage(file='images/openeye.png')
+openeye = PhotoImage(file='images/login_screen/openeye.png')
 eyeButton = Button(login_window, image=openeye,
                    bd=0, bg='white', activebackground='white',
                    cursor='hand2', command=hide)
