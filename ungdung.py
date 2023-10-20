@@ -10,16 +10,16 @@ from define import *
 # Hàm cập nhật dữ liệu của ghi chú
 def update_schedule_to_data_private(day, subject, time):
     # Bước 1: Mở tệp json
-    with open("data_private.json", "r", encoding="utf-8") as json_file:
+    with open("schedule.json", "r", encoding="utf-8") as json_file:
         data = json.load(json_file)
     day_first_selected = combobox_weeks.get()[5:15] # Lấy dữ liệu ngày đầu tuần của combobox
     with open("weeks_time.json", "r", encoding="utf-8") as json2_file:
         week_select = json.load(json2_file)
     # Bước 2: Thay đổi dữ liệu
-    data[week_select[day_first_selected]][day][time] = subject
+    data[week_select[day_first_selected]][day][time]['Ghi chú'] = subject
 
     # Bước 3: Lưu tệp JSON
-    with open('data_private.json', 'w',encoding="utf-8") as json_file:
+    with open('schedule.json', 'w',encoding="utf-8") as json_file:
         json.dump(data, json_file,indent=4, ensure_ascii=False)
     update_schedule_from_json()
 
@@ -38,8 +38,17 @@ def update_schedule_from_json():
 
 # Hàm thực hiện việc đưa dữ liệu lấy từ file json vào ô khóa biểu, các tham số day và time cho biết vị trí ô khóa biểu
 def add_subject2(day, subject, time):
-    if(subject != {} and(subject['Môn học'] != '')) :
-        schedule[time][day] = subject['Môn học'] + "\n" + subject['Phòng học']
+    if(subject != {}) :
+        if(subject['Môn học'] == '') :
+            if(subject['Ghi chú'] == '') :
+                schedule[time][day] = ""
+            else :
+                schedule[time][day] = subject['Ghi chú']
+        else :
+            if(subject['Ghi chú'] == '') :
+                schedule[time][day] = subject['Môn học'] + "\n" + subject['Phòng học']
+            else :
+                schedule[time][day] = subject['Môn học'] + "\n" + subject['Phòng học'] + " (" + subject['Ghi chú'] + ')'
     else :
         schedule[time][day] = ""
     update_schedule_display() #Chuyển đến việc hiển thị
@@ -47,30 +56,21 @@ def add_subject2(day, subject, time):
 # Hàm thực hiện hiển thị dữ liệu lên các ô khóa biểu
 def update_schedule_display():
     # Mở các file json
-    with open("data_private.json", "r", encoding="utf-8") as json_file:
-        data = json.load(json_file)
-    day_first_selected = combobox_weeks.get()[5:15]
-    with open("weeks_time.json", "r", encoding="utf-8") as json2_file:
-        week_select = json.load(json2_file)
     for day in days_of_week:
         for time_slot in time_slots:
             subject = schedule[time_slot][day]
-            if data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, "") != '' :
-                if(subject != ''):
-                    subject  += " ( " + data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, "") + " )"
-                else :
-                    subject  += data.get(week_select[day_first_selected], {}).get(day, {}).get(time_slot, "")
+            
             text_widget = subject_entries[(day, time_slot)]
-            text_widget.configure(state=tk.NORMAL) # Trạng thái bình thường
+            text_widget.configure(state=tk.NORMAL, wrap = tk.WORD, yscrollcommand = None) # Trạng thái bình thường
             text_widget.delete('1.0', tk.END)  # Xóa toàn bộ nội dung trong Text widget
             if subject != '':
                 text_widget.configure(background='#CFE2FF')
             else:
                 text_widget.configure(background='white')
             text_widget.insert(tk.END, subject)  # Chèn dữ liệu mới từ đầu
-            text_widget.configure(state=tk.DISABLED)
+            text_widget.configure(state=tk.DISABLED, yscrollcommand = None)
             # Tạo một kiểu dáng (tag) tùy chỉnh để căn giữa
-            text_widget.tag_configure("center", justify = 'center', spacing1 = 5, spacing2 = 1)
+            text_widget.tag_configure("center", justify = 'center')
 
             # Áp dụng kiểu dáng "center" cho văn bản trong Text Widget
             text_widget.tag_add("center", "1.0", "end")
@@ -79,6 +79,37 @@ def update_schedule_display():
             bold_font = (FONT_MAIN, SIZE_SMALL(screen_width, screen_height), "bold")
             text_widget.tag_configure("bold", font=bold_font)
             text_widget.tag_add("bold", "1.0", "1.end")
+
+def update_json() :
+    with open("weeks_time.json", "r", encoding="utf-8") as json2_file:
+        week_select = json.load(json2_file)
+    with open("schedule.json", "r", encoding="utf-8") as json2_file:
+        data = json.load(json2_file)
+    with open("test.json", "r", encoding="utf-8") as json2_file:
+        data_week = json.load(json2_file)
+    
+
+    week = week_select[data_week['ngay_bat_dau']]
+    for data_day in data_week["ds_thoi_khoa_bieu"] :
+        d = data_day["thu_kieu_so"]
+        if(d < 8 ) :
+            day = "Thứ " + str(d)
+        else :
+            day = "Chủ Nhật"
+        begin_lesson = data_day["tiet_bat_dau"]
+        count_tiet = data_day["so_tiet"]
+        for i in range(count_tiet) :
+            time_slot = time_slots[begin_lesson + i - 1]
+            data[week][day][time_slot]["Môn học"] = data_day["ten_mon"]
+            phong = data_day["ma_phong"]
+            phong_info = phong.split("-")
+            phong = phong_info[0] + "-" + phong_info[1]
+            data[week][day][time_slot]["Phòng học"] = phong
+            data[week][day][time_slot]["Giáo viên"] = data_day["ten_giang_vien"]
+    
+    # Bước 3: Lưu tệp JSON
+    with open('schedule.json', 'w', encoding="utf-8") as json_file:
+        json.dump(data, json_file, indent=4, ensure_ascii=False)
 
 # Hàm tạo bo góc cho frame
 def create_rounded_frame(width, height, radius, color):
@@ -95,9 +126,9 @@ def create_rounded_frame(width, height, radius, color):
 # Hàm thay đổi font chữ dựa theo độ phân giải màn hình, có 3 mức là small, normal và big
 def SIZE_SMALL(width, height):
     if(width >= 1920 and height >= 1080 - 80) :
-        return 12
+        return 11
     elif (width >= 1600 and height >=  900 - 80) :
-        return 10
+        return 9
     elif (width >= 1280 and height >=  720 - 80) :
         return 8
     elif(width >= 800 and height >=  600 - 80) :
@@ -139,6 +170,8 @@ lession_slots = ["Tiết 1", "Tiết 2", "Tiết 3", "Tiết 4", "Tiết 5", "Ti
 schedule = {time: {day: "" for day in days_of_week} for time in time_slots} # dict chứa dữ liệu các ô khóa biểu
 subject_entries = {(day, time_slot): None for day in days_of_week for time_slot in time_slots} # dict chứa các ô khóa biểu dạng Text Widget
 
+update_json()
+
 # ---------------Phân chia các vùng để làm giao diện----------------------
 # Tạo frame0 bao phủ toàn bộ cửa sổ 
 frame0 = tk.Frame(root, background= COLOR_BACKGROUND)
@@ -157,7 +190,7 @@ frame1.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx= 20, pady= 40)
 frame2_width = screen_width - frame1_width
 frame2_height = screen_height
 frame2 = tk.Frame(frame0, background= COLOR_BACKGROUND, width=frame2_width, height=frame2_height)
-frame2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx= 20, pady=40)
+frame2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx= 20, pady= 10)
 
 # Tạo 3 frame con của frame2 xếp chồng lên nhau
 frame5_height = frame2_height * (1/9)
@@ -217,14 +250,17 @@ label_lop = tk.Label(label_frame1_info, text = "Lớp : {}".format(lop), backgro
 label_gioitinh = tk.Label(label_frame1_info, text = "Giới tính : {}".format(gioitinh), background = COLOR_TEXT, fg = COLOR_TEXT_INFO, font = (FONT_MAIN, SIZE_NORMAL(screen_width,screen_height), ), bg= COLOR_LABEL).pack(pady= 5)
 label_nganh = tk.Label(label_frame1_info, text = "Ngành : {}".format(nganh), background = COLOR_TEXT, fg = COLOR_TEXT_INFO, font = (FONT_MAIN, SIZE_NORMAL(screen_width,screen_height), ), bg= COLOR_LABEL).pack(pady= 5)
 
-# Nút đăng xuất
-button_signout = tk.Button(rounded_frame1_label, text = "Đăng xuất", borderwidth= 1, relief= "solid", background= COLOR_MAIN, fg= 'white', font= (FONT_MAIN, SIZE_NORMAL(screen_width,screen_height)))
-button_signout.place(relx=0.5, rely=0.9, anchor= 's')
+# Nút dailynote
+daily_note = tk.Button(rounded_frame1_label, text = "Daily Note", borderwidth= 1, relief= "solid", background= COLOR_MAIN, fg= 'white', font= (FONT_MAIN, SIZE_NORMAL(screen_width,screen_height)))
+daily_note.place(relx=0.5, rely=0.76, anchor= 's')
 
 # Nút cập nhật dữ liệu từ file schedule.json
 update_button = tk.Button(rounded_frame1_label, text="Cập nhật Thời Khóa Biểu", command=update_schedule_from_json, borderwidth= 1, relief= "solid", background= COLOR_MAIN, fg= 'white', font= (FONT_MAIN, SIZE_NORMAL(screen_width,screen_height)))
 update_button.place(relx=0.5, rely=0.83, anchor= 's')
 
+# Nút đăng xuất
+button_signout = tk.Button(rounded_frame1_label, text = "Đăng xuất", borderwidth= 1, relief= "solid", background= COLOR_MAIN, fg= 'white', font= (FONT_MAIN, SIZE_NORMAL(screen_width,screen_height)))
+button_signout.place(relx=0.5, rely=0.9, anchor= 's')
 #----Xử lý frame3 : Bảng TKB ----
 # Chia cột và hàng
 frame3.rowconfigure(0, weight = 1)
@@ -286,7 +322,7 @@ for j, lession_slot in enumerate(lession_slots):
 for i, day in enumerate(days_of_week):
     tk.Label(frame3, text=day, font=(FONT_MAIN, SIZE_NORMAL(screen_width,screen_height), 'bold'), bg=COLOR_MAIN, fg=COLOR_TEXT).grid(row=0, column=i+1, sticky=tk.W + tk.E + tk.S + tk.N)
     for j, time_slot in enumerate(time_slots):
-        text_widget = tk.Text(frame3, height=1, width=40, font = (FONT_MAIN, SIZE_SMALL(screen_width, screen_height) - 2), state = tk.DISABLED)
+        text_widget = tk.Text(frame3, height=2, width=40, font = (FONT_MAIN, SIZE_SMALL(screen_width, screen_height) - 1), state = tk.DISABLED)
         text_widget.grid(row=j+1, column=i+1, sticky=tk.W + tk.E + tk.S + tk.N)
         subject_entries[(day, time_slot)] = text_widget
 

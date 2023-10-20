@@ -1,18 +1,25 @@
 import tkinter as tk
 
-# Tạo cửa sổ giao diện đồ họa
-root = tk.Tk()
-root.title("Xóa nội dung trong Text Widget")
+def show_label(event):
+    label.config(text="Thông tin bổ sung")
+    label.place(x=event.x_root + 10, y=event.y_root + 10)
 
-# Tạo một Text widget
-text_widget = tk.Text(root)
+def hide_label(event):
+    label.place_forget()
+
+root = tk.Tk()
+root.title("Hiển thị Label khi hover vào Text Widget")
+
+# Tạo Text Widget
+text_widget = tk.Text(root, width=30, height=10)
 text_widget.pack()
 
-# Thêm nội dung vào Text widget
-text_widget.insert("1.0", "Đây là nội dung trong Text widget.\nThêm một số dòng khác.")
+# Tạo Label ẩn ban đầu
+label = tk.Label(root, text="", bg="lightgray")
+label.place_forget()
 
-# Xóa toàn bộ nội dung trong Text widget
-text_widget.delete("1.0", "end")
+# Gắn sự kiện khi di chuột vào Text Widget
+text_widget.bind("<Enter>", show_label)
+text_widget.bind("<Leave>", hide_label)
 
-# Hiển thị cửa sổ giao diện đồ họa
 root.mainloop()

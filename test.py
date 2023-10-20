@@ -1,28 +1,31 @@
 import tkinter as tk
-from tkinter import ttk
 
-# Hàm lắng nghe sự kiện khi giá trị trong Combobox thay đổi
-def on_combobox_select(event):
-    selected_value = combo_var.get()  # Lấy giá trị đã chọn
-    result_label.config(text=f"Đã chọn: {selected_value}")
+def show_label(event):
+    text_widget = event.widget  # Xác định Text Widget mà sự kiện được kích hoạt
+    label.config(text="Thông tin bổ sung")
+    
+    x, y, _, _ = text_widget.bbox("insert")
+    x_root = text_widget.winfo_rootx() + x
+    y_root = text_widget.winfo_rooty() + y
+    label.place(x=x_root + text_widget.winfo_width(), y=y_root)
 
-# Tạo cửa sổ gốc
+def hide_label(event):
+    label.place_forget()
+
 root = tk.Tk()
-root.title("Combobox và tự động thay đổi Label")
+root.title("Hiển thị Label khi hover vào Text Widget")
 
-# Tạo biến StringVar để lưu giá trị của Combobox
-combo_var = tk.StringVar()
+# Tạo nhiều Text Widget
+text_widgets = []
+for i in range(5):
+    text_widget = tk.Text(root, width=30, height=5)
+    text_widget.pack()
+    text_widget.bind("<Enter>", show_label)
+    text_widget.bind("<Leave>", hide_label)
+    text_widgets.append(text_widget)
 
-# Tạo Combobox
-combo = ttk.Combobox(root, textvariable=combo_var, values=["Giá trị 1", "Giá trị 2", "Giá trị 3"])
-combo.pack()
+# Tạo Label ẩn ban đầu
+label = tk.Label(root, text="", bg="lightgray")
+label.place_forget()
 
-# Tạo một Label để hiển thị kết quả
-result_label = tk.Label(root, text="")
-result_label.pack()
-
-# Khi giá trị trong Combobox thay đổi, gọi hàm on_combobox_select
-combo.bind("<<ComboboxSelected>>", on_combobox_select)
-
-# Hiển thị cửa sổ
 root.mainloop()
