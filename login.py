@@ -27,9 +27,9 @@ def show():
     eyeButton.config(command=hide)
 
 
-# def sign_up_page():
-#     login_window.destroy()
-#     import schedule
+
+
+
 
 def Login():
 
@@ -37,11 +37,14 @@ def Login():
     password = passwordEntry.get()
     try:
         user = auth.sign_in_with_email_and_password(username, password)
+        print(user)
         token = user['localId']
         token_storage.stored_token = token
+        print(token_storage.stored_token)
         login_window.destroy()
         open_window_home()
-    except Exception:
+    except Exception as err:
+        print(err)
         messagebox.showerror("Lỗi", f"Đăng nhập không thành công.")
 def open_window_home():
     import home
@@ -63,7 +66,6 @@ y_position = (screen_height - 660) // 2
 login_window.geometry('990x660+{}+{}'.format(x_position, y_position))
 login_window.resizable(0, 0)
 login_window.title('Login Page')
-print(screen_height, screen_width)
 # ======================================================================================
 bgImage = ImageTk.PhotoImage(file='images/login_screen/bg.jpg')
 bgLabel = Label(login_window, image=bgImage)
@@ -124,3 +126,5 @@ loginButton = Button(login_window, text='Login',
                      cursor='hand2', bd=0, width=19, command=Login)
 loginButton.place(x=578, y=475)
 login_window.mainloop()
+
+

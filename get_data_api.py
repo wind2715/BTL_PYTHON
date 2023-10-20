@@ -75,7 +75,21 @@ def get_image(msv, access_token):
     response_image = session.post(url_image, headers=headers, data=payload)
     if response_image.status_code == 200:
         images = response_image.json()['data']['thong_tin_sinh_vien']['image']
-        return images
+        return "data:image/png;base64," + images
+    else:
+        print("no")
+        return None
+def get_info(access_token):
+    url_infor = f'https://qldt.ptit.edu.vn/api/dkmh/w-locsinhvieninfo'
+    session = requests.Session()
+    headers = {
+        'Content-type': 'application/json',
+        'Authorization': f'Bearer {access_token}'
+    }
+    response_infor = session.post(url_infor, headers=headers)
+    if response_infor.status_code == 200:
+        infor = response_infor.json()['data']
+        return infor
     else:
         print("no")
         return None
@@ -87,6 +101,8 @@ if __name__ == "__main__":
     password = 'phong2715'
     print(get_image(username, get_token(username, password)))
     ds_nhom_to_result = get_ds_nhom_to(get_token(username, password))
+    infor = get_info(get_token(username, password))
+    print(infor)
 
     if ds_nhom_to_result:
         print("Danh sách nhóm tổ:")

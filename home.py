@@ -1,20 +1,24 @@
 import tkinter as tk
 import tkinter.font as Font
+from io import BytesIO
 from tkinter import ttk
 import json
 from PIL import Image, ImageTk, ImageDraw
 import webcolors
 import datetime
 import token_storage
-from get_data_api import get_ds_nhom_to, get_token
+from get_data_api import get_ds_nhom_to, get_token, get_image, get_info
 from firebase_config import db
+import requests
+import base64
+
+token = token_storage.stored_token
+doc_ref = db.collection("sinhVien").document(token).get().to_dict()
+msv = doc_ref['msv']
+password = doc_ref['password']
 
 
 def get_datas():
-    token = token_storage.stored_token
-    doc_ref = db.collection("sinhVien").document(token).get().to_dict()
-    msv = doc_ref['msv']
-    password = doc_ref['password']
     data = get_ds_nhom_to(get_token(msv, password))
     return data
 
@@ -219,24 +223,28 @@ rounded_frame1_label.place(relx=0.5, rely=0.5, anchor="center")
 label_frame1_info = tk.Label(rounded_frame1_label, background='white')
 label_frame1_info.place(relx=0.5, rely=0.05, anchor="n")
 
-with open("datas/home_screen/studen_info.json", "r", encoding="utf-8") as json_file:
-    data_info = json.load(json_file)
+infor = get_info(get_token(msv,password))
 
-tensinhvien = data_info['Họ và tên']
-masinhvien = data_info['Mã sinh viên']
-lop = data_info['Lớp']
-gioitinh = data_info["Giới tính"]
-ngaysinh = data_info["Ngày sinh"]
-nganh = data_info['Ngành học']
+tensinhvien = infor['ten_day_du']
+masinhvien = infor['ma_sv']
+lop = infor['lop']
+gioitinh = infor["gioi_tinh"]
+ngaysinh = infor["ngay_sinh"]
+nganh = infor['nganh']
 
 label_ten = tk.Label(label_frame1_info, text="Họ và tên : {}".format(tensinhvien), background='#ffffff', fg='#000000',
                      font=("Arial", SIZE_BIG(screen_width, screen_height), 'bold')).pack(pady=5)
 
-# Mở hình ảnh bằng PIL
-image = Image.open("images/home_screen/user_ava_images/avatar.jpg")
-# Thay đổi đường dẫn đến hình ảnh của bạn
 
-# Thu nhỏ hình ảnh để có kích thước 100x100
+# Mở hình ảnh bằng PIL
+data_uri = get_image(msv, get_token(msv, password))
+head, data = data_uri.split(',', 1)
+image_data = base64.b64decode(data)
+
+# Đọc hình ảnh từ dữ liệu base64 mà không cần lưu vào tệp
+image = Image.open(BytesIO(image_data))
+
+# Thu nhỏ hình ảnh để có kích thước 200x200
 image = image.resize((200, 200), Image.ADAPTIVE)
 
 # Tạo một đối tượng ImageTk từ hình ảnh và đặt kích thước của nó
@@ -252,6 +260,8 @@ label_gioitinh = tk.Label(label_frame1_info, text="Giới tính : {}".format(gio
                           font=("Arial", SIZE_NORMAL(screen_width, screen_height),)).pack(pady=5)
 label_nganh = tk.Label(label_frame1_info, text="Ngành : {}".format(nganh), background='#ffffff', fg='#000000',
                        font=("Arial", SIZE_NORMAL(screen_width, screen_height),)).pack(pady=5)
+
+
 
 button_signout = tk.Button(rounded_frame1_label, text="Đăng xuất", borderwidth=1, relief="solid", background='#A0151A',
                            fg='white', font=("Arial", SIZE_NORMAL(screen_width, screen_height)))
@@ -407,6 +417,5 @@ combobox_weeks.set(f"Ngày {day_first_week.strftime('%d/%m/%Y')} đến {day_end
 
 tmp = combobox_weeks.get()
 tmp = tmp[5:15]
-print(tmp)
 # Open the window
 root.mainloop()
